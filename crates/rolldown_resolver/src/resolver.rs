@@ -61,6 +61,7 @@ impl<F: FileSystem + Default> Resolver<F> {
         resolved
       }
     };
+    println!("{:?}", resolved);
     resolved
       // If result type parsing is correct
       .map(|info| {

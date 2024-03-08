@@ -1,17 +1,15 @@
 use std::path::Path;
 
-use once_cell::sync::Lazy;
-use regex::Regex;
+// use once_cell::sync::Lazy;
+// use regex::Regex;
 use rolldown_common::ModuleType;
 use rolldown_error::BuildError;
 use rolldown_plugin::{HookResolveIdArgs, HookResolveIdExtraOptions, SharedPluginDriver};
 
 use crate::{types::resolved_request_info::ResolvedRequestInfo, SharedResolver};
 
-static HTTP_URL_REGEX: Lazy<Regex> =
-  Lazy::new(|| Regex::new(r"^(https?:)?\/\/").expect("Init HTTP_URL_REGEX failed"));
-static DATA_URL_REGEX: Lazy<Regex> =
-  Lazy::new(|| Regex::new(r"^\s*data:").expect("Init DATA_URL_REGEX failed"));
+// static DATA_URL_REGEX: Lazy<Regex> =
+//   Lazy::new(|| Regex::new(r"^\s*data:").expect("Init DATA_URL_REGEX failed"));
 
 #[allow(clippy::no_effect_underscore_binding)]
 pub async fn resolve_id(
@@ -39,7 +37,9 @@ pub async fn resolve_id(
   }
 
   // Auto external http url or data url
-  if HTTP_URL_REGEX.is_match(request) || DATA_URL_REGEX.is_match(request) {
+  if request.starts_with("http://") || request.starts_with("https://")
+  // || DATA_URL_REGEX.is_match(request)
+  {
     return Ok(ResolvedRequestInfo {
       path: request.to_string().into(),
       module_type: ModuleType::Unknown,
