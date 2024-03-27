@@ -1,7 +1,6 @@
 use napi::Env;
 use napi_derive::napi;
-use rolldown::Bundler as NativeBundler;
-use tracing::instrument;
+use rolldown::{Bundler as NativeBundler, BundlerBuilder};
 
 use crate::{
   options::{BindingInputOptions, BindingOutputOptions},
@@ -22,48 +21,23 @@ impl Bundler {
     input_options: BindingInputOptions,
     output_options: BindingOutputOptions,
   ) -> napi::Result<Self> {
-    try_init_custom_trace_subscriber(env);
+    #[cfg(not(target_family = "wasm"))]
+    {
+      try_init_custom_trace_subscriber(env);
+    }
     let ret = normalize_binding_options(input_options, output_options)?;
 
     Ok(Self {
-      inner: NativeBundler::with_plugins(ret.input_options, ret.output_options, ret.plugins),
+      inner: BundlerBuilder::default()
+        .with_input_options(ret.input_options)
+        .with_output_options(ret.output_options)
+        .with_plugins(ret.plugins)
+        .build(),
     })
   }
 
   #[napi]
   pub async unsafe fn write(&mut self) -> napi::Result<BindingOutputs> {
-    self.write_impl().await
-  }
-
-  #[napi]
-  pub async unsafe fn generate(&mut self) -> napi::Result<BindingOutputs> {
-    self.generate_impl().await
-  }
-
-  #[napi]
-  pub async unsafe fn scan(&mut self) -> napi::Result<()> {
-    self.scan_impl().await
-  }
-}
-
-impl Bundler {
-  #[instrument(skip_all)]
-  #[allow(clippy::significant_drop_tightening)]
-  pub async fn scan_impl(&mut self) -> napi::Result<()> {
-    let result = self.inner.scan().await;
-
-    if let Err(err) = result {
-      // TODO: better handing errors
-      eprintln!("{err:?}");
-      return Err(napi::Error::from_reason("Build failed"));
-    }
-
-    Ok(())
-  }
-
-  #[instrument(skip_all)]
-  #[allow(clippy::significant_drop_tightening)]
-  pub async fn write_impl(&mut self) -> napi::Result<BindingOutputs> {
     let maybe_outputs = self.inner.write().await;
 
     let outputs = match maybe_outputs {
@@ -78,9 +52,8 @@ impl Bundler {
     Ok(outputs.assets.into())
   }
 
-  #[instrument(skip_all)]
-  #[allow(clippy::significant_drop_tightening)]
-  pub async fn generate_impl(&mut self) -> napi::Result<BindingOutputs> {
+  #[napi]
+  pub async unsafe fn generate(&mut self) -> napi::Result<BindingOutputs> {
     let maybe_outputs = self.inner.generate().await;
 
     let outputs = match maybe_outputs {
@@ -93,5 +66,18 @@ impl Bundler {
     };
 
     Ok(outputs.assets.into())
+  }
+
+  #[napi]
+  pub async unsafe fn scan(&mut self) -> napi::Result<()> {
+    let result = self.inner.scan().await;
+
+    if let Err(err) = result {
+      // TODO: better handing errors
+      eprintln!("{err:?}");
+      return Err(napi::Error::from_reason("Build failed"));
+    }
+
+    Ok(())
   }
 }

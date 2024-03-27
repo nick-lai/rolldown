@@ -124,6 +124,9 @@ importers:
       '@napi-rs/cli':
         specifier: ^3.0.0-alpha.44
         version: 3.0.0-alpha.44(emnapi@1.1.0)
+      '@napi-rs/wasm-runtime':
+        specifier: ^0.1.2
+        version: 0.1.2
       citty:
         specifier: ^0.1.6
         version: 0.1.6
@@ -1048,6 +1051,18 @@ packages:
       - '@algolia/client-search'
     dev: true
 
+  /@emnapi/core@1.1.0:
+    resolution: {integrity: sha512-gNEVZo0HhUfVjhr6rFG//HZXbauclxueiDxaKGBZHcK5h8i9pslABNPfG8kMwYTubAn3mV7AyOZN8gfPRgbU8A==}
+    dependencies:
+      tslib: 2.6.2
+    dev: true
+
+  /@emnapi/runtime@1.1.0:
+    resolution: {integrity: sha512-gCGlE0fJGWalfy+wbFApjhKn6uoSVvopru77IPyxNKkjkaiSx2HxDS7eOYSmo9dcMIhmmIvoxiC3N9TM1c3EaA==}
+    dependencies:
+      tslib: 2.6.2
+    dev: true
+
   /@esbuild/aix-ppc64@0.19.12:
     resolution: {integrity: sha512-bmoCYyWdEL3wDQIVbcyzRyeKLgk2WtWLTWz1ZIAZF/EGbNOwSA6ew3PftJ1PqMiOOGu0OyFMzG53L0zqIpPeNA==}
     engines: {node: '>=12'}
@@ -1901,6 +1916,14 @@ packages:
       '@napi-rs/tar-win32-arm64-msvc': 0.1.0
       '@napi-rs/tar-win32-ia32-msvc': 0.1.0
       '@napi-rs/tar-win32-x64-msvc': 0.1.0
+    dev: true
+
+  /@napi-rs/wasm-runtime@0.1.2:
+    resolution: {integrity: sha512-8JuczewTFIZ/XIjHQ+YlQUydHvlKx2hkcxtuGwh+t/t5zWyZct6YG4+xjHcq8xyc/e7FmFwf42Zj2YgICwmlvA==}
+    dependencies:
+      '@emnapi/core': 1.1.0
+      '@emnapi/runtime': 1.1.0
+      '@tybys/wasm-util': 0.8.1
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -2823,6 +2846,12 @@ packages:
   /@trysound/sax@0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
+    dev: true
+
+  /@tybys/wasm-util@0.8.1:
+    resolution: {integrity: sha512-GSsTwyBl4pIzsxAY5wroZdyQKyhXk0d8PCRZtrSZ2WEB1cBdrp2EgGBwHOGCZtIIPun/DL3+AykCv+J6fyRH4Q==}
+    dependencies:
+      tslib: 2.6.2
     dev: true
 
   /@types/debug@4.1.12:

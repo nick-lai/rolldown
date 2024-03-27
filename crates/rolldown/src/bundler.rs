@@ -48,9 +48,7 @@ impl Bundler {
       .with_plugins(plugins)
       .build()
   }
-}
 
-impl Bundler {
   pub async fn write(&mut self) -> BatchedResult<RolldownOutput> {
     let dir =
       self.input_options.cwd.as_path().join(&self.output_options.dir).to_string_lossy().to_string();

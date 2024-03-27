@@ -132,7 +132,16 @@ impl ModuleLoader {
       let id = self.intermediate_normal_modules.alloc_module_id(&mut self.symbols);
       self.remaining += 1;
       let task = RuntimeNormalModuleTask::new(id, self.common_data.tx.clone());
-      tokio::spawn(async move { task.run() });
+      #[cfg(target_family = "wasm")]
+      {
+        std::thread::spawn(|| {
+          task.run();
+        });
+      }
+      #[cfg(not(target_family = "wasm"))]
+      {
+        tokio::spawn(async move { task.run() });
+      }
       id
     })
   }

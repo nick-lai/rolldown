@@ -9,9 +9,7 @@ use vfs::{FileSystem as _, MemoryFS};
 
 use crate::file_system::FileSystem;
 
-pub type FsPath = String;
-pub type FsFileContent = String;
-pub type FsFileMap<'a> = &'a [(&'a FsPath, &'a FsFileContent)];
+pub type FsFileMap<'a, FsPath, FsFileContent> = &'a [(FsPath, FsFileContent)];
 
 #[derive(Default, Clone)]
 pub struct MemoryFileSystem {
@@ -24,10 +22,12 @@ impl MemoryFileSystem {
   ///
   /// * Fails to create directory
   /// * Fails to write file
-  pub fn new(data: FsFileMap) -> Self {
+  pub fn new<FsPath: AsRef<str>, FsFileContent: AsRef<str>>(
+    data: FsFileMap<FsPath, FsFileContent>,
+  ) -> Self {
     let mut fs = Self::default();
     for (path, content) in data {
-      fs.add_file(Path::new(path), content);
+      fs.add_file(Path::new(path.as_ref()), content.as_ref());
     }
     fs
   }
